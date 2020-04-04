@@ -63,14 +63,6 @@ pub fn naive_from_unix(time: i64) -> NaiveDateTime {
 pub fn is_email_regex(test: &str) -> bool {
   EMAIL_REGEX.is_match(test)
 }
-
-pub fn remove_slurs(test: &str) -> String {
-  SLUR_REGEX.replace_all(test, "*removed*").to_string()
-}
-
-pub fn slur_check(test: &str) -> Result<(), Vec<&str>> {
-  let mut matches: Vec<&str> = SLUR_REGEX.find_iter(test).map(|mat| mat.as_str()).collect();
-
   // Unique
   matches.sort_unstable();
   matches.dedup();
@@ -80,12 +72,6 @@ pub fn slur_check(test: &str) -> Result<(), Vec<&str>> {
   } else {
     Err(matches)
   }
-}
-
-pub fn slurs_vec_to_str(slurs: Vec<&str>) -> String {
-  let start = "No slurs - ";
-  let combined = &slurs.join(", ");
-  [start, combined].concat()
 }
 
 pub fn extract_usernames(test: &str) -> Vec<&str> {
@@ -226,40 +212,12 @@ pub fn markdown_to_html(text: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-  use crate::{extract_usernames, is_email_regex, remove_slurs, slur_check, slurs_vec_to_str};
+  use crate::{extract_usernames, is_email_regex};
 
   #[test]
   fn test_email() {
     assert!(is_email_regex("gush@gmail.com"));
     assert!(!is_email_regex("nada_neutho"));
-  }
-
-  #[test]
-  fn test_slur_filter() {
-    let test =
-      "coons test dindu ladyboy tranny retardeds. Capitalized Niggerz. This is a bunch of other safe text.";
-    let slur_free = "No slurs here";
-    assert_eq!(
-      remove_slurs(&test),
-      "*removed* test *removed* *removed* *removed* *removed*. Capitalized *removed*. This is a bunch of other safe text."
-        .to_string()
-    );
-
-    let has_slurs_vec = vec![
-      "Niggerz",
-      "coons",
-      "dindu",
-      "ladyboy",
-      "retardeds",
-      "tranny",
-    ];
-    let has_slurs_err_str = "No slurs - Niggerz, coons, dindu, ladyboy, retardeds, tranny";
-
-    assert_eq!(slur_check(test), Err(has_slurs_vec));
-    assert_eq!(slur_check(slur_free), Ok(()));
-    if let Err(slur_vec) = slur_check(test) {
-      assert_eq!(&slurs_vec_to_str(slur_vec), has_slurs_err_str);
-    }
   }
 
   #[test]
@@ -293,6 +251,5 @@ mod tests {
 
 lazy_static! {
   static ref EMAIL_REGEX: Regex = Regex::new(r"^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$").unwrap();
-  static ref SLUR_REGEX: Regex = RegexBuilder::new(r"(fag(g|got|tard)?|maricos?|cock\s?sucker(s|ing)?|nig(\b|g?(a|er)?(s|z)?)\b|dindu(s?)|mudslime?s?|kikes?|mongoloids?|towel\s*heads?|\bspi(c|k)s?\b|\bchinks?|niglets?|beaners?|\bnips?\b|\bcoons?\b|jungle\s*bunn(y|ies?)|jigg?aboo?s?|\bpakis?\b|rag\s*heads?|gooks?|cunts?|bitch(es|ing|y)?|puss(y|ies?)|twats?|feminazis?|whor(es?|ing)|\bslut(s|t?y)?|\btrann?(y|ies?)|ladyboy(s?)|\b(b|re|r)tard(ed)?s?)").case_insensitive(true).build().unwrap();
   static ref USERNAME_MATCHES_REGEX: Regex = Regex::new(r"/u/[a-zA-Z][0-9a-zA-Z_]*").unwrap();
 }
