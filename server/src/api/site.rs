@@ -190,16 +190,6 @@ impl Perform<SiteResponse> for Oper<CreateSite> {
       Err(_e) => return Err(APIError::err("not_logged_in").into()),
     };
 
-    if let Err(slurs) = slur_check(&data.name) {
-      return Err(APIError::err(&slurs_vec_to_str(slurs)).into());
-    }
-
-    if let Some(description) = &data.description {
-      if let Err(slurs) = slur_check(description) {
-        return Err(APIError::err(&slurs_vec_to_str(slurs)).into());
-      }
-    }
-
     let user_id = claims.id;
 
     // Make sure user is an admin
@@ -236,16 +226,6 @@ impl Perform<SiteResponse> for Oper<EditSite> {
       Ok(claims) => claims.claims,
       Err(_e) => return Err(APIError::err("not_logged_in").into()),
     };
-
-    if let Err(slurs) = slur_check(&data.name) {
-      return Err(APIError::err(&slurs_vec_to_str(slurs)).into());
-    }
-
-    if let Some(description) = &data.description {
-      if let Err(slurs) = slur_check(description) {
-        return Err(APIError::err(&slurs_vec_to_str(slurs)).into());
-      }
-    }
 
     let user_id = claims.id;
 
