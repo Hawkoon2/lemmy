@@ -176,20 +176,6 @@ impl Perform<CommunityResponse> for Oper<CreateCommunity> {
       Err(_e) => return Err(APIError::err("not_logged_in").into()),
     };
 
-    if let Err(slurs) = slur_check(&data.name) {
-      return Err(APIError::err(&slurs_vec_to_str(slurs)).into());
-    }
-
-    if let Err(slurs) = slur_check(&data.title) {
-      return Err(APIError::err(&slurs_vec_to_str(slurs)).into());
-    }
-
-    if let Some(description) = &data.description {
-      if let Err(slurs) = slur_check(description) {
-        return Err(APIError::err(&slurs_vec_to_str(slurs)).into());
-      }
-    }
-
     let user_id = claims.id;
 
     // Check for a site ban
@@ -248,21 +234,7 @@ impl Perform<CommunityResponse> for Oper<CreateCommunity> {
 impl Perform<CommunityResponse> for Oper<EditCommunity> {
   fn perform(&self, conn: &PgConnection) -> Result<CommunityResponse, Error> {
     let data: &EditCommunity = &self.data;
-
-    if let Err(slurs) = slur_check(&data.name) {
-      return Err(APIError::err(&slurs_vec_to_str(slurs)).into());
-    }
-
-    if let Err(slurs) = slur_check(&data.title) {
-      return Err(APIError::err(&slurs_vec_to_str(slurs)).into());
-    }
-
-    if let Some(description) = &data.description {
-      if let Err(slurs) = slur_check(description) {
-        return Err(APIError::err(&slurs_vec_to_str(slurs)).into());
-      }
-    }
-
+    
     let claims = match Claims::decode(&data.auth) {
       Ok(claims) => claims.claims,
       Err(_e) => return Err(APIError::err("not_logged_in").into()),
