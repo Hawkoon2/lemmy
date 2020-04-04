@@ -241,10 +241,6 @@ impl Perform<LoginResponse> for Oper<Register> {
       return Err(APIError::err("passwords_dont_match").into());
     }
 
-    if let Err(slurs) = slur_check(&data.username) {
-      return Err(APIError::err(&slurs_vec_to_str(slurs)).into());
-    }
-
     // Make sure there are no admins
     if data.admin && !UserView::admins(&conn)?.is_empty() {
       return Err(APIError::err("admin_already_created").into());
