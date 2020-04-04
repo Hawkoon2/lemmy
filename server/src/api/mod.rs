@@ -18,8 +18,7 @@ use crate::db::user_mention_view::*;
 use crate::db::user_view::*;
 use crate::db::*;
 use crate::{
-  extract_usernames, fetch_iframely_and_pictshare_data, naive_from_unix, naive_now, remove_slurs,
-  slur_check, slurs_vec_to_str,
+  extract_usernames, fetch_iframely_and_pictshare_data, naive_from_unix, naive_now,
 };
 use diesel::PgConnection;
 use failure::Error;
